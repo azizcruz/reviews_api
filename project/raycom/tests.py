@@ -1,10 +1,11 @@
 from django.test import TestCase
 from .models import (
     Post,
-    RaycomCustomUser,
     Tag,
-    Comment
+    Comment,
 )
+from . import views
+from rest_framework.test import APIRequestFactory
 from .serializers import PostSerializer
 # Create your tests here.
 class RaycomTests(TestCase):
@@ -12,6 +13,8 @@ class RaycomTests(TestCase):
         # Create a user
         self.user1 = RaycomCustomUser.objects.create(username="aziz", password="gfg1f2gfa")
         self.user2 = RaycomCustomUser.objects.create(username="ali", password="gfg1f2gfa")
+        # Create a profile and assign it to user 1
+        self.profile1 = Profile.objects.create(user=self.user1)
         # Create two tags
         self.tag1 = Tag.objects.create(tag_name="sport")
         self.tag2 = Tag.objects.create(tag_name="technology")
@@ -27,12 +30,11 @@ class RaycomTests(TestCase):
         # Add dislike to comment 1
         self.comment1.dislikes.add(self.user2)
         # Add the two comments to the post
-        self.post.comments.add(self.comment1, self.comment2)
+        self.post.post_comments.add(self.comment1, self.comment2)
+        # Using the standard RequestFactory API to create a form POST request
+        self.factory = APIRequestFactory()
+        self.view = views.PostsView.as_view({'post': 'post'})
 
-    def test_if_user_is_created(self):
-        import pdb; pdb.set_trace()
-        
-        self.assertEqual(RaycomCustomUser.objects.all().first().username, 'aziz')
 
     def test_if_tag_is_created(self):
         self.assertEqual(Tag.objects.all().first().tag_name, 'sport')
@@ -41,10 +43,23 @@ class RaycomTests(TestCase):
         self.assertEqual(Post.objects.all().first().title, 'bla nla')
 
     def test_if_post_has_comment1(self):
-        self.assertEqual(Post.objects.all().first().comments.all().first().text, 'test1')
+        self.assertEqual(Post.objects.all().first().post_comments.all().first().text, 'test1')
     
     def test_if_post_has_tag(self):
         self.assertEqual(Post.objects.all().first().tags.all().first().tag_name, 'sport')
 
     def test_if_comment1_has_likes(self):
-        self.assertEqual(Post.objects.all().first().comments.all().first().likes.all().count(), 1)
+        self.assertEqual(Post.objects.all().first().post_comments.all().first().likes.all().count(), 1)
+    
+
+    # Views Testing
+    def test_creating_a_post_(self):
+        data = {
+                "post_image": "",
+                "title": "test_create_post_title",
+                "content": "test_create_post_content"
+            }
+        request = self.factory.post('/posts/', data)
+        request.user = self.user1
+        response = self.view(request)
+        self.assertAlmostEqual(response.status_code, 201)

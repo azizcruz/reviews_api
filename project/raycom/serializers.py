@@ -1,15 +1,11 @@
 from rest_framework import serializers
+from rest_framework.exceptions import NotAuthenticated
 from .models import (
     Post,
-    RaycomCustomUser,
     Comment
 )
 
-
-class RaycomCustomUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RaycomCustomUser
-        fields = ('username', 'first_name', 'last_name')
+from raycom_users.serializers import RaycomCustomUserSerializer
 
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
@@ -19,14 +15,26 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('user', 'text', 'likes_count', 'dislikes_count')
 
+    # Resturn likes and dislikes as counted numbers instead of lists.
     def get_likes_count(self, obj):
         return obj.likes.count()
     def get_dislikes_count(self, obj):
         return obj.dislikes.count()
-
+        
 class PostSerializer(serializers.ModelSerializer):
-    writer = RaycomCustomUserSerializer()
-    comments = CommentSerializer(many=True)
+    writer = RaycomCustomUserSerializer(read_only=True)
+    post_comments = CommentSerializer(many=True, read_only=True)
     class Meta:
         model = Post
-        fields = ['post_image', 'title', 'content', 'writer', 'comments']
+        fields = ['post_image', 'title', 'content', 'writer', 'post_comments']
+
+    # Add the post writer explicitly.
+    def create(self, validated_data):
+        if self.context['request'].user.username is not '':
+            user = self.context['request'].user
+            post = Post(writer=user, **validated_data)
+            post.save()
+            return post
+        else:
+            raise NotAuthenticated('You need to be logged in to perform this action.')
+    

@@ -38,7 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+    'rest_auth',
     'raycom',
+    'raycom_users'
 ]
 
 MIDDLEWARE = [
@@ -101,7 +108,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'raycom.RaycomCustomUser'
+AUTH_USER_MODEL = 'raycom_users.RaycomCustomUser'
+SITE_ID = 1
 
 
 
