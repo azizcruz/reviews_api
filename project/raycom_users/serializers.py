@@ -9,8 +9,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class RaycomCustomUserSerializerUsersApp(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=True)
-    mylikes = serializers.ReadOnlyField(source='mylikes.count')
-    mydislikes = serializers.ReadOnlyField(source='mydislikes.count')
+    # mylikes = serializers.ReadOnlyField(source='mylikes.count')
+    # mydislikes = serializers.ReadOnlyField(source='mydislikes.count')
     class Meta:
         depth = 1
         model = RaycomCustomUser

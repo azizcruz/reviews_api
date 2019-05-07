@@ -110,8 +110,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'raycom_users.RaycomCustomUser'
 SITE_ID = 1
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_REQUIRED = True
 
-
+# Rest auth settings
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/

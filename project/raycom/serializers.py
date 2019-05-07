@@ -7,6 +7,11 @@ from .models import (
 
 from raycom_users.serializers import RaycomCustomUserSerializer
 
+class CommentSerializerRaycom(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'text', 'likes', 'dislikes', 'post', 'user']
+
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     likes_count = serializers.SerializerMethodField()
