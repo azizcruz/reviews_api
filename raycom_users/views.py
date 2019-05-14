@@ -9,6 +9,7 @@ from rest_framework import authentication
 from rest_framework import exceptions
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework.authentication import SessionAuthentication
+
 class UsersView(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = RaycomCustomUser.objects.all()
     serializer_class = RaycomCustomUserSerializerUsersApp

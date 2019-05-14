@@ -19,5 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('raycom.urls')),
+    path('raycom-auth/', include('raycom_users.urls')),
     path('api-auth/', include('rest_framework.urls'))
 ]
